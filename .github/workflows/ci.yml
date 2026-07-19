@@ -29,6 +29,6 @@ jobs:
 
       - name: Test one-shot DNX execution
         run: >-
-          dnx RoslynCli.Tool@0.1.0 --source artifacts/package --
+          dnx RoslynCli.Tool --source artifacts/package --
           symbol search samples/SkillFixture/SkillFixture.slnx
           ProcessPaymentAsync --kind method --format json
