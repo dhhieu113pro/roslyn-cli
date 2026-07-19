@@ -22,5 +22,29 @@
     "pattern": "RefundAsync",
     "kind": "method",
     "expectedLocationCount": 2
+  },
+  {
+    "prompt": "Find the ProcessorName property.",
+    "pattern": "ProcessorName",
+    "kind": "property",
+    "expectedQualifiedName": "SkillFixture.Payments.PaymentService.ProcessorName"
+  },
+  {
+    "prompt": "Find the ProviderCategory field.",
+    "pattern": "ProviderCategory",
+    "kind": "field",
+    "expectedQualifiedName": "SkillFixture.Payments.PaymentService.ProviderCategory"
+  },
+  {
+    "prompt": "Where is the Order type declared?",
+    "pattern": "Order",
+    "kind": "type",
+    "expectedQualifiedName": "SkillFixture.Domain.Order"
+  },
+  {
+    "prompt": "Confirm that MissingPaymentSymbol has no source declaration.",
+    "pattern": "MissingPaymentSymbol",
+    "kind": "type",
+    "expectedLocationCount": 0
   }
 ]

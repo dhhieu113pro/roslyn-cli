@@ -25,18 +25,7 @@ jobs:
           python-version: "3.13"
 
       - name: Test with 100% coverage gates
-        run: dotnet test RoslynCli.slnx --configuration Release
-
-      - name: Validate skills
-        run: python scripts/validate-skills.py
-
-      - name: Pack tool
-        run: dotnet pack src/RoslynCli/RoslynCli.csproj --configuration Release --no-restore --output artifacts/package
-
-      - name: Install and smoke-test package
-        run: |
-          dotnet tool install RoslynCli.Tool --tool-path artifacts/tool --add-source artifacts/package
-          python scripts/verify-skill-cases.py artifacts/tool/roslyn
+        run: python scripts/test-all.py
 
       - name: Test one-shot DNX execution
         run: >-

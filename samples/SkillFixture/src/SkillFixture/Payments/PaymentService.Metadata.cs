@@ -2,6 +2,8 @@ namespace SkillFixture.Payments;
 
 public sealed partial class PaymentService
 {
+    public const string ProviderCategory = "Payments";
+
     public string ProcessorName => "Fixture Gateway";
 
     public Task<PaymentReceipt> RefundAsync(string transactionId) =>
