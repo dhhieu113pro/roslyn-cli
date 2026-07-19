@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/RoslynCli/RoslynCli.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/RoslynCli.Tests/RoslynCli.Tests.csproj" />
+  </Folder>
+</Solution>
