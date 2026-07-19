@@ -20,18 +20,163 @@ roslyn analyze complexity <workspace> --threshold 7 --limit 20
 The extended operation bridge exposes all 41 operations from the MIT-licensed
 RoslynMcp.Core library, including navigation, metrics, control/data flow,
 generation, conversions, using organization, formatting, and solution-wide
-refactorings with preview support:
+refactorings.
 
 ```bash
 roslyn tool list
-roslyn tool run MySolution.sln rename-symbol --params \
-  '{"sourceFile":"/repo/UserService.cs","symbolName":"UserService","newName":"AccountService","preview":true}'
-roslyn tool run MySolution.sln get-code-metrics --params \
-  '{"sourceFile":"/repo/UserService.cs"}'
 ```
 
-Use `preview: true` for mutating operations before applying changes. Extended
-operation parameter names follow the [RoslynMcpServer tool contracts](https://github.com/JoshuaRamirez/RoslynMcpServer#available-tools).
+The examples below use these placeholders:
+
+```bash
+WS=/repo/MySolution.sln
+FILE=/repo/src/OrderService.cs
+```
+
+### Navigation and analysis operations
+
+```bash
+# 1. diagnose
+roslyn tool run "$WS" diagnose --params '{}'
+
+# 2. find-references
+roslyn tool run "$WS" find-references --params "{\"sourceFile\":\"$FILE\",\"symbolName\":\"ProcessOrder\",\"maxResults\":100}"
+
+# 3. find-callers
+roslyn tool run "$WS" find-callers --params "{\"sourceFile\":\"$FILE\",\"symbolName\":\"ProcessOrder\",\"maxResults\":100}"
+
+# 4. find-implementations
+roslyn tool run "$WS" find-implementations --params "{\"sourceFile\":\"$FILE\",\"symbolName\":\"IOrderService\",\"maxResults\":100}"
+
+# 5. go-to-definition
+roslyn tool run "$WS" go-to-definition --params "{\"sourceFile\":\"$FILE\",\"line\":20,\"column\":15}"
+
+# 6. search-symbols
+roslyn tool run "$WS" search-symbols --params '{"query":"Order","kindFilter":"Class","maxResults":100}'
+
+# 7. get-diagnostics
+roslyn tool run "$WS" get-diagnostics --params "{\"sourceFile\":\"$FILE\",\"severityFilter\":\"Warning\"}"
+
+# 8. get-code-metrics
+roslyn tool run "$WS" get-code-metrics --params "{\"sourceFile\":\"$FILE\",\"symbolName\":\"ProcessOrder\"}"
+
+# 9. analyze-control-flow
+roslyn tool run "$WS" analyze-control-flow --params "{\"sourceFile\":\"$FILE\",\"startLine\":20,\"endLine\":35}"
+
+# 10. analyze-data-flow
+roslyn tool run "$WS" analyze-data-flow --params "{\"sourceFile\":\"$FILE\",\"startLine\":20,\"endLine\":35}"
+
+# 11. get-document-outline
+roslyn tool run "$WS" get-document-outline --params "{\"sourceFile\":\"$FILE\"}"
+
+# 12. get-symbol-info
+roslyn tool run "$WS" get-symbol-info --params "{\"sourceFile\":\"$FILE\",\"symbolName\":\"ProcessOrder\"}"
+
+# 13. get-type-hierarchy
+roslyn tool run "$WS" get-type-hierarchy --params "{\"sourceFile\":\"$FILE\",\"symbolName\":\"OrderService\",\"direction\":\"Both\"}"
+```
+
+### Extract, move, and signature operations
+
+All mutating examples request a preview. Review the returned changes, then set
+`preview` to `false` to apply them.
+
+```bash
+# 14. extract-method
+roslyn tool run "$WS" extract-method --params "{\"sourceFile\":\"$FILE\",\"startLine\":20,\"startColumn\":9,\"endLine\":25,\"endColumn\":30,\"methodName\":\"ValidateOrder\",\"preview\":true}"
+
+# 15. extract-variable
+roslyn tool run "$WS" extract-variable --params "{\"sourceFile\":\"$FILE\",\"startLine\":20,\"startColumn\":20,\"endLine\":20,\"endColumn\":40,\"variableName\":\"total\",\"preview\":true}"
+
+# 16. extract-constant
+roslyn tool run "$WS" extract-constant --params "{\"sourceFile\":\"$FILE\",\"startLine\":12,\"startColumn\":20,\"endLine\":12,\"endColumn\":23,\"constantName\":\"MaxRetries\",\"preview\":true}"
+
+# 17. extract-interface
+roslyn tool run "$WS" extract-interface --params "{\"sourceFile\":\"$FILE\",\"typeName\":\"OrderService\",\"interfaceName\":\"IOrderService\",\"members\":[\"ProcessOrder\"],\"preview\":true}"
+
+# 18. extract-base-class
+roslyn tool run "$WS" extract-base-class --params "{\"sourceFile\":\"$FILE\",\"typeName\":\"OrderService\",\"baseClassName\":\"OrderServiceBase\",\"members\":[\"ValidateOrder\"],\"preview\":true}"
+
+# 19. introduce-parameter
+roslyn tool run "$WS" introduce-parameter --params "{\"sourceFile\":\"$FILE\",\"variableName\":\"timeout\",\"line\":20,\"preview\":true}"
+
+# 20. rename-symbol
+roslyn tool run "$WS" rename-symbol --params "{\"sourceFile\":\"$FILE\",\"symbolName\":\"OrderService\",\"newName\":\"OrderProcessor\",\"preview\":true}"
+
+# 21. inline-variable
+roslyn tool run "$WS" inline-variable --params "{\"sourceFile\":\"$FILE\",\"variableName\":\"total\",\"line\":20,\"preview\":true}"
+
+# 22. change-signature
+roslyn tool run "$WS" change-signature --params "{\"sourceFile\":\"$FILE\",\"methodName\":\"ProcessOrder\",\"parameters\":[{\"name\":\"cancellationToken\",\"type\":\"CancellationToken\",\"newPosition\":1}],\"preview\":true}"
+
+# 23. encapsulate-field
+roslyn tool run "$WS" encapsulate-field --params "{\"sourceFile\":\"$FILE\",\"fieldName\":\"_status\",\"propertyName\":\"Status\",\"preview\":true}"
+
+# 24. move-type-to-file
+roslyn tool run "$WS" move-type-to-file --params "{\"sourceFile\":\"$FILE\",\"symbolName\":\"OrderService\",\"targetFile\":\"/repo/src/OrderProcessor.cs\",\"preview\":true}"
+
+# 25. move-type-to-namespace
+roslyn tool run "$WS" move-type-to-namespace --params "{\"sourceFile\":\"$FILE\",\"symbolName\":\"OrderService\",\"targetNamespace\":\"MyApp.Orders\",\"preview\":true}"
+```
+
+### Conversion operations
+
+```bash
+# 26. convert-to-async
+roslyn tool run "$WS" convert-to-async --params "{\"sourceFile\":\"$FILE\",\"methodName\":\"ProcessOrder\",\"renameToAsync\":true,\"preview\":true}"
+
+# 27. convert-expression-body
+roslyn tool run "$WS" convert-expression-body --params "{\"sourceFile\":\"$FILE\",\"memberName\":\"OrderCount\",\"direction\":\"ToBlockBody\",\"preview\":true}"
+
+# 28. convert-property
+roslyn tool run "$WS" convert-property --params "{\"sourceFile\":\"$FILE\",\"propertyName\":\"Status\",\"direction\":\"ToFullProperty\",\"preview\":true}"
+
+# 29. convert-foreach-linq
+roslyn tool run "$WS" convert-foreach-linq --params "{\"sourceFile\":\"$FILE\",\"line\":30,\"preview\":true}"
+
+# 30. convert-to-interpolated-string
+roslyn tool run "$WS" convert-to-interpolated-string --params "{\"sourceFile\":\"$FILE\",\"line\":30,\"preview\":true}"
+
+# 31. convert-to-pattern-matching
+roslyn tool run "$WS" convert-to-pattern-matching --params "{\"sourceFile\":\"$FILE\",\"line\":30,\"preview\":true}"
+```
+
+### Generation, organization, and formatting operations
+
+```bash
+# 32. generate-constructor
+roslyn tool run "$WS" generate-constructor --params "{\"sourceFile\":\"$FILE\",\"typeName\":\"OrderService\",\"members\":[\"_repository\"],\"addNullChecks\":true,\"preview\":true}"
+
+# 33. generate-equals-hashcode
+roslyn tool run "$WS" generate-equals-hashcode --params "{\"sourceFile\":\"$FILE\",\"typeName\":\"Order\",\"fields\":[\"Id\"],\"preview\":true}"
+
+# 34. generate-overrides
+roslyn tool run "$WS" generate-overrides --params "{\"sourceFile\":\"$FILE\",\"typeName\":\"OrderService\",\"members\":[\"ToString\"],\"preview\":true}"
+
+# 35. generate-tostring
+roslyn tool run "$WS" generate-tostring --params "{\"sourceFile\":\"$FILE\",\"typeName\":\"Order\",\"fields\":[\"Id\",\"Total\"],\"preview\":true}"
+
+# 36. implement-interface
+roslyn tool run "$WS" implement-interface --params "{\"sourceFile\":\"$FILE\",\"typeName\":\"OrderService\",\"interfaceName\":\"IOrderService\",\"preview\":true}"
+
+# 37. add-null-checks
+roslyn tool run "$WS" add-null-checks --params "{\"sourceFile\":\"$FILE\",\"methodName\":\"ProcessOrder\",\"style\":\"ThrowIfNull\",\"preview\":true}"
+
+# 38. add-missing-usings
+roslyn tool run "$WS" add-missing-usings --params "{\"sourceFile\":\"$FILE\",\"preview\":true}"
+
+# 39. remove-unused-usings
+roslyn tool run "$WS" remove-unused-usings --params "{\"sourceFile\":\"$FILE\",\"preview\":true}"
+
+# 40. sort-usings
+roslyn tool run "$WS" sort-usings --params "{\"sourceFile\":\"$FILE\",\"preview\":true}"
+
+# 41. format-document
+# Applies immediately; use a clean working tree.
+roslyn tool run "$WS" format-document --params "{\"sourceFile\":\"$FILE\"}"
+```
+
+Extended operation parameter names follow the [RoslynMcpServer tool contracts](https://github.com/JoshuaRamirez/RoslynMcpServer#available-tools).
 
 ## Showcase
 

@@ -1,5 +1,6 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Text.RegularExpressions;
 
 namespace RoslynCli.Tests;
 
@@ -43,6 +44,18 @@ public sealed class FeatureCommandTests
         Assert.Equal(41, output.ToString().Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries).Length);
         Assert.Contains("diagnose", output.ToString());
         Assert.Contains("rename-symbol", output.ToString());
+    }
+
+    [Fact]
+    public void Readme_DocumentsEveryExtendedOperation()
+    {
+        var root = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../"));
+        var readme = File.ReadAllText(Path.Combine(root, "README.md"));
+        var documented = Regex.Matches(readme, @"(?m)^# \d+\. ([a-z0-9-]+)$")
+            .Select(match => match.Groups[1].Value)
+            .ToArray();
+        Assert.Equal(ExtendedToolService.GetOperationNames().Order(), documented.Order());
+        Assert.Equal(documented.Length, documented.Distinct().Count());
     }
 
     [Theory]
