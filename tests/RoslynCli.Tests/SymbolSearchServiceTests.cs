@@ -163,16 +163,20 @@ public sealed class SymbolSearchServiceTests
     }
 
     [Theory]
-    [InlineData("src/RoslynCli/RoslynCli.csproj")]
-    [InlineData("RoslynCli.slnx")]
-    public async Task SearchPathAsync_LoadsSupportedWorkspaceFiles(string relativePath)
+    [InlineData("src/RoslynCli/RoslynCli.csproj", "OutputWriter", "RoslynCli.OutputWriter")]
+    [InlineData("RoslynCli.slnx", "OutputWriter", "RoslynCli.OutputWriter")]
+    [InlineData("tests/RoslynCli.Tests/Fixtures/Classic/Classic.sln", "FixtureWorker", "Fixture.FixtureWorker")]
+    public async Task SearchPathAsync_LoadsSupportedWorkspaceFiles(
+        string relativePath,
+        string pattern,
+        string qualifiedName)
     {
         var path = Path.Combine(GetRepositoryRoot(), relativePath);
 
         var results = await SymbolSearchService.SearchPathAsync(
-            path, "OutputWriter", "type", 10);
+            path, pattern, "type", 10);
 
-        Assert.Contains(results, result => result.QualifiedName == "RoslynCli.OutputWriter");
+        Assert.Contains(results, result => result.QualifiedName == qualifiedName);
     }
 
     private static Project CreateProject(AdhocWorkspace workspace, string name, string source)
