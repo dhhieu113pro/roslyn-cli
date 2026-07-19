@@ -51,11 +51,15 @@ public sealed class FeatureCommandTests
     {
         var root = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../"));
         var readme = File.ReadAllText(Path.Combine(root, "README.md"));
-        var documented = Regex.Matches(readme, @"(?m)^# \d+\. ([a-z0-9-]+)$")
-            .Select(match => match.Groups[1].Value)
-            .ToArray();
+        var documented = ParseDocumented(readme.ReplaceLineEndings("\n"));
+        Assert.Equal(documented, ParseDocumented(readme.ReplaceLineEndings("\r\n")));
         Assert.Equal(ExtendedToolService.GetOperationNames().Order(), documented.Order());
         Assert.Equal(documented.Length, documented.Distinct().Count());
+
+        static string[] ParseDocumented(string content) =>
+            Regex.Matches(content, @"(?m)^# \d+\. ([a-z0-9-]+)\r?$")
+                .Select(match => match.Groups[1].Value)
+                .ToArray();
     }
 
     [Theory]
