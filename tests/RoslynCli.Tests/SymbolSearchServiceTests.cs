@@ -5,6 +5,18 @@ namespace RoslynCli.Tests;
 
 public sealed class SymbolSearchServiceTests
 {
+    [Theory]
+    [InlineData("Shop.*Service")]
+    [InlineData("Shop.?rderService")]
+    public async Task SearchSolutionAsync_SupportsWildcardPatterns(string pattern)
+    {
+        using var workspace = new AdhocWorkspace();
+        var project = CreateProject(workspace, "Demo", "namespace Shop; public class OrderService { }");
+        var results = await SymbolSearchService.SearchSolutionAsync(project.Solution, pattern, "type", 10);
+        Assert.Single(results);
+        Assert.Equal("OrderService", results[0].Name);
+    }
+
     [Fact]
     public async Task SearchSolutionAsync_FindsTypesAndMembersSemantically()
     {

@@ -1,6 +1,7 @@
 using Microsoft.Build.Locator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.MSBuild;
+using System.Text.RegularExpressions;
 
 namespace RoslynCli;
 
@@ -115,7 +116,8 @@ public static class SymbolSearchService
         string? kind,
         List<SymbolSearchResult> results)
     {
-        if (!symbol.Name.Contains(pattern, StringComparison.OrdinalIgnoreCase))
+        if (!MatchesPattern(symbol.Name, pattern) &&
+            (!HasWildcards(pattern) || !MatchesPattern(symbol.ToDisplayString(QualifiedNameFormat), pattern)))
             return;
 
         var resultKind = GetKind(symbol);
@@ -139,6 +141,19 @@ public static class SymbolSearchService
     private static string GetKind(ISymbol symbol) =>
         symbol is INamedTypeSymbol ? "type" : symbol.Kind.ToString().ToLowerInvariant();
 
+    private static bool MatchesPattern(string value, string pattern)
+    {
+        if (!HasWildcards(pattern))
+            return value.Contains(pattern, StringComparison.OrdinalIgnoreCase);
+
+        var regex = "^" + Regex.Escape(pattern)
+            .Replace("\\*", ".*")
+            .Replace("\\?", ".") + "$";
+        return Regex.IsMatch(value, regex, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+    }
+
+    private static bool HasWildcards(string pattern) => pattern.Contains('*') || pattern.Contains('?');
+
     private static string? NormalizeKind(string? kind)
     {
         if (string.IsNullOrWhiteSpace(kind))
@@ -153,7 +168,6 @@ public static class SymbolSearchService
 
     private static void EnsureMSBuildRegistered()
     {
-        if (!MSBuildLocator.IsRegistered)
-            MSBuildLocator.RegisterDefaults();
+        MSBuildRegistration.Ensure();
     }
 }

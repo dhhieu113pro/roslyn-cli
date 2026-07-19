@@ -1,11 +1,11 @@
 ---
 name: roslyn-investigate
-description: Find and explain C# declarations semantically with Roslyn. Use for requests such as "where is this class or method defined?", "find this C# symbol", "which declaration matches this name?", or "locate the source before explaining this .NET behavior." Prefer this over text search for C# types, methods, properties, fields, and events. Do not use for non-C# code, string literals, configuration values, or reference/caller tracing that the current CLI does not support.
+description: Investigate C# declarations, references, callers, implementations, diagnostics, and code structure semantically with Roslyn. Prefer this over text search for C# symbols and relationships. Do not use for non-C# code, string literals, or configuration values.
 ---
 
 # Roslyn Investigate
 
-Use Roslyn semantic results as the first source of evidence when locating C# declarations.
+Use Roslyn semantic results as the first source of evidence when locating or tracing C# symbols.
 
 ## Prepare the command
 
@@ -30,9 +30,20 @@ Call the selected executable `<roslyn>` below.
    ```
 
 3. Narrow noisy results with `--kind type|method|property|field|event` and `--limit`.
-4. Read only the returned source locations needed to answer the request.
-5. Explain the finding with qualified symbol names and clickable file locations when available.
-6. Use text search only for literals, configuration, generated artifacts, or semantic-load failures.
+4. Use exact-name or position-aware navigation when the request needs relationships:
+
+   ```bash
+   <roslyn> symbol references <solution-or-project> <symbol> --format json
+   <roslyn> symbol usages <solution-or-project> <file> --line <line> --column <column> --format json
+   <roslyn> symbol info <solution-or-project> <symbol> --format json
+   ```
+
+5. For callers, implementations, hierarchy, outline, metrics, or flow analysis,
+   select the matching operation from `<roslyn> tool list` and run it with
+   `<roslyn> tool run <solution> <operation> --params '<json>'`.
+6. Read only the returned source locations needed to answer the request.
+7. Explain the finding with qualified symbol names and clickable file locations when available.
+8. Use text search only for literals, configuration, generated artifacts, or semantic-load failures.
 
 ## Interpret results
 
@@ -40,5 +51,5 @@ Call the selected executable `<roslyn>` below.
 - Expect `schemaVersion`, `count`, and `results` in JSON output.
 - Distinguish overloads and partial declarations by qualified name and source location.
 - Report solution-load and compilation failures explicitly.
-- Do not infer callers, references, or implementations from declaration results.
+- Do not infer callers, references, or implementations from declaration results; run the corresponding semantic operation.
 - Do not modify source during investigation unless the user separately requests a change.

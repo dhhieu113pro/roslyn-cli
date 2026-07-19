@@ -1,6 +1,37 @@
 # Roslyn CLI
 
-Semantic command-line tooling for C# repositories, paired with agent skills that use its structured output.
+Semantic command-line tooling for C# repositories: symbol navigation, diagnostics,
+dependency and complexity analysis, plus a complete previewable refactoring suite.
+
+## Commands
+
+Focused commands cover common investigation workflows:
+
+```bash
+roslyn symbol search <workspace> '*Service' --kind type
+roslyn symbol references <workspace> ProcessPaymentAsync
+roslyn symbol usages <workspace> PaymentService.cs --line 9 --column 39
+roslyn symbol info <workspace> ProcessPaymentAsync --format json
+roslyn analyze validate <workspace> PaymentService.cs
+roslyn analyze dependencies <workspace> --format json
+roslyn analyze complexity <workspace> --threshold 7 --limit 20
+```
+
+The extended operation bridge exposes all 41 operations from the MIT-licensed
+RoslynMcp.Core library, including navigation, metrics, control/data flow,
+generation, conversions, using organization, formatting, and solution-wide
+refactorings with preview support:
+
+```bash
+roslyn tool list
+roslyn tool run MySolution.sln rename-symbol --params \
+  '{"sourceFile":"/repo/UserService.cs","symbolName":"UserService","newName":"AccountService","preview":true}'
+roslyn tool run MySolution.sln get-code-metrics --params \
+  '{"sourceFile":"/repo/UserService.cs"}'
+```
+
+Use `preview: true` for mutating operations before applying changes. Extended
+operation parameter names follow the [RoslynMcpServer tool contracts](https://github.com/JoshuaRamirez/RoslynMcpServer#available-tools).
 
 ## Showcase
 
@@ -154,7 +185,7 @@ dotnet tool install --global RoslynCli.Tool \
 With the .NET 10 SDK, the same tool package supports one-shot execution without installation:
 
 ```bash
-dnx RoslynCli.Tool@0.1.0 --source src/RoslynCli/bin/Release -- \
+dnx RoslynCli.Tool@0.2.0 --source src/RoslynCli/bin/Release -- \
   symbol search RoslynCli.slnx SymbolSearch --format json
 ```
 
