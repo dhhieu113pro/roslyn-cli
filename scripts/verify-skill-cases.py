@@ -3,6 +3,7 @@
 
 from pathlib import Path
 import json
+import os
 import subprocess
 import sys
 
@@ -13,7 +14,10 @@ def main() -> int:
         return 2
 
     repository = Path(__file__).resolve().parent.parent
-    executable = str(Path(sys.argv[1]).resolve())
+    executable_path = Path(sys.argv[1]).resolve()
+    if os.name == "nt" and not executable_path.exists():
+        executable_path = executable_path.with_suffix(".exe")
+    executable = str(executable_path)
     fixture = repository / "samples" / "SkillFixture"
     solution = fixture / "SkillFixture.slnx"
     cases = json.loads((fixture / "skill-cases.json").read_text(encoding="utf-8"))
