@@ -33,4 +33,24 @@ dotnet tool install --global RoslynCli.Tool \
   --add-source src/RoslynCli/bin/Release
 ```
 
-The initial companion skill lives at `skills/roslyn-investigate` and should be distributed from this repository with the CLI.
+## Use with Codex
+
+The repository-scoped skill lives at `.agents/skills/roslyn-investigate`, a path Codex discovers automatically when working in this checkout. Invoke it explicitly with `$roslyn-investigate`, or ask a matching question such as “Where is `ProcessPaymentAsync` declared?” for implicit activation.
+
+For use in other repositories, install the bundled plugin:
+
+```bash
+codex plugin marketplace add dhhieu113pro/roslyn-cli
+codex plugin add roslyn-cli@roslyn-cli
+```
+
+The plugin includes the same skill under `plugins/roslyn-cli`. CI verifies that the repository and plugin copies remain identical.
+
+## Skill fixture
+
+`samples/SkillFixture` is a standalone C# solution for exercising semantic skill workflows. For example:
+
+```bash
+roslyn symbol search samples/SkillFixture/SkillFixture.slnx \
+  ProcessPaymentAsync --kind method --format json
+```

@@ -1,0 +1,26 @@
+[
+  {
+    "prompt": "Where is ProcessPaymentAsync declared?",
+    "pattern": "ProcessPaymentAsync",
+    "kind": "method",
+    "expectedQualifiedName": "SkillFixture.Payments.PaymentService.ProcessPaymentAsync(SkillFixture.Domain.Order, System.Threading.CancellationToken)"
+  },
+  {
+    "prompt": "Find the PaymentCompleted event.",
+    "pattern": "PaymentCompleted",
+    "kind": "event",
+    "expectedQualifiedName": "SkillFixture.Payments.PaymentService.PaymentCompleted"
+  },
+  {
+    "prompt": "Locate every partial declaration of PaymentService.",
+    "pattern": "PaymentService",
+    "kind": "type",
+    "expectedLocationCount": 2
+  },
+  {
+    "prompt": "Which RefundAsync overloads exist?",
+    "pattern": "RefundAsync",
+    "kind": "method",
+    "expectedLocationCount": 2
+  }
+]

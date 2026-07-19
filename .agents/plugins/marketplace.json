@@ -1,0 +1,20 @@
+{
+  "name": "roslyn-cli",
+  "interface": {
+    "displayName": "Roslyn CLI"
+  },
+  "plugins": [
+    {
+      "name": "roslyn-cli",
+      "source": {
+        "source": "local",
+        "path": "./plugins/roslyn-cli"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}

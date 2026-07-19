@@ -1,0 +1,27 @@
+{
+  "name": "roslyn-cli",
+  "version": "0.1.0",
+  "description": "Semantic C# code investigation workflows powered by Roslyn CLI",
+  "author": {
+    "name": "dhhieu113pro",
+    "url": "https://github.com/dhhieu113pro"
+  },
+  "homepage": "https://github.com/dhhieu113pro/roslyn-cli",
+  "repository": "https://github.com/dhhieu113pro/roslyn-cli",
+  "keywords": ["roslyn", "csharp", "dotnet", "code-search"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Roslyn CLI",
+    "shortDescription": "Investigate C# code with Roslyn semantics.",
+    "longDescription": "Find C# types and members semantically, then explain the exact declarations and source locations.",
+    "developerName": "dhhieu113pro",
+    "category": "Developer Tools",
+    "capabilities": ["Read"],
+    "websiteURL": "https://github.com/dhhieu113pro/roslyn-cli",
+    "defaultPrompt": [
+      "Find where this C# symbol is declared.",
+      "Locate and explain this .NET type.",
+      "Find the exact method declaration."
+    ]
+  }
+}

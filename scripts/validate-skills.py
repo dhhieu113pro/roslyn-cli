@@ -39,13 +39,25 @@ def validate(skill_dir: Path) -> list[str]:
 
 def main() -> int:
     repository = Path(__file__).resolve().parent.parent
-    skills_dir = repository / "skills"
-    skill_dirs = sorted(path for path in skills_dir.iterdir() if path.is_dir())
+    repository_skills = repository / ".agents" / "skills"
+    plugin_skills = repository / "plugins" / "roslyn-cli" / "skills"
+    skill_dirs = sorted(
+        path
+        for skills_dir in (repository_skills, plugin_skills)
+        for path in skills_dir.iterdir()
+        if path.is_dir()
+    )
     errors = [error for skill_dir in skill_dirs for error in validate(skill_dir)]
+
+    repo_skill = repository_skills / "roslyn-investigate"
+    plugin_skill = plugin_skills / "roslyn-investigate"
+    for relative_path in (Path("SKILL.md"), Path("agents/openai.yaml")):
+        if (repo_skill / relative_path).read_bytes() != (plugin_skill / relative_path).read_bytes():
+            errors.append(f"roslyn-investigate copies differ at {relative_path}")
     if errors:
         print("\n".join(errors), file=sys.stderr)
         return 1
-    print(f"Validated {len(skill_dirs)} skill(s).")
+    print(f"Validated {len(skill_dirs)} skill package(s).")
     return 0
 
 

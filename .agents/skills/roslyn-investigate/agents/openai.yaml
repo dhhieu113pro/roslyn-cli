@@ -1,0 +1,4 @@
+interface:
+  display_name: "Roslyn Investigate"
+  short_description: "Find C# declarations with Roslyn semantics"
+  default_prompt: "Use $roslyn-investigate to find and explain this C# declaration."

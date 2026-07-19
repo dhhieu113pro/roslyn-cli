@@ -27,4 +27,4 @@ jobs:
       - name: Install and smoke-test package
         run: |
           dotnet tool install RoslynCli.Tool --tool-path artifacts/tool --add-source artifacts/package
-          artifacts/tool/roslyn symbol search RoslynCli.slnx SymbolSearch --kind type --format json
+          python3 scripts/verify-skill-cases.py artifacts/tool/roslyn

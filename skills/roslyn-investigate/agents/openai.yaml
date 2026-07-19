@@ -1,4 +1,0 @@
-interface:
-  display_name: "Roslyn Investigate"
-  short_description: "Trace and explain C# code semantically"
-  default_prompt: "Use $roslyn-investigate to locate and explain this C# behavior."
